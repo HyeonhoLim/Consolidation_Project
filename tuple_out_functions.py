@@ -24,3 +24,14 @@ def is_game_over(scores, target_score):
     Checks if any player's score meets or exceeds the target score.
     """
     return any(score >= target_score for score in scores.values())
+
+def fix_dice(dice):
+    """
+    Identifies which dice are 'fixed' (have the same value as another die).
+    Returns a list of indices of fixed dice.
+    """
+    fixed_indices = []
+    for i in range(len(dice)):
+        if dice.count(dice[i]) > 1:
+            fixed_indices.append(i)
+    return fixed_indices
