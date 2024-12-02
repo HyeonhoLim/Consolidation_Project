@@ -1,4 +1,4 @@
-from tuple_out_functions import roll_dice, check_tuple_out, calculate_score, is_game_over
+from tuple_out_functions import roll_dice, check_tuple_out, calculate_score, is_game_over, fix_dice
 
 def get_yes_no_input(prompt):
     """
@@ -27,30 +27,38 @@ def play_game():
             print(f"\n{player}'s turn:")
             dice = roll_dice()
             print(f"Initial roll: {dice}")
-            
+
             if check_tuple_out(dice):
                 print(f"{player} tupled out! No points this turn.")
                 continue
             
+            # Fix dice and re-roll unfixed dice
             while True:
-                re_roll = get_yes_no_input("Do you want to reroll any dice? (yes/no): ")
-                if re_roll == "yes":
-                    indices_to_reroll = input("Enter the positions (1, 2, or 3) of dice to reroll, separated by spaces: ").strip().split()
-                    indices_to_reroll = [int(i) - 1 for i in indices_to_reroll if i.isdigit() and 1 <= int(i) <= 3]
-                    
-                    for i in indices_to_reroll:
+                fixed_indices = fix_dice(dice)
+                print(f"Fixed dice: {[dice[i] for i in fixed_indices]}")
+                unfixed_indices = [i for i in range(len(dice)) if i not in fixed_indices]
+
+                if not unfixed_indices:  # No dice left to roll
+                    print("No unfixed dice left to reroll.")
+                    break
+
+                reroll = get_yes_no_input("Do you want to reroll unfixed dice? (yes/no): ")
+                if reroll == "yes":
+                    for i in unfixed_indices:
                         dice[i] = roll_dice()[0]
-                    
                     print(f"New roll: {dice}")
+                    
                     if check_tuple_out(dice):
                         print(f"{player} tupled out! No points this turn.")
                         break
-                else:  # If the user says 'no', calculate score and end turn
-                    turn_score = calculate_score(dice)
-                    player_scores[player] += turn_score
-                    print(f"{player} scored {turn_score} points this turn.")
-                    print(f"Total score: {player_scores[player]}")
+                else:
                     break
+
+            if not check_tuple_out(dice):  # Calculate score if not tupled out
+                turn_score = calculate_score(dice)
+                player_scores[player] += turn_score
+                print(f"{player} scored {turn_score} points this turn.")
+                print(f"Total score: {player_scores[player]}")
 
         # Check again if game is over after the round
         if is_game_over(player_scores, target_score):
