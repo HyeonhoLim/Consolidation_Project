@@ -46,4 +46,5 @@ If a player tuples out (all three dice have the same value), they score 0 points
 
 # Winning the Game
 - The game ends when a player scores 50 or more points.
-The player with the highest score wins.
+
+- The player with the highest score wins.
